@@ -55,20 +55,20 @@ app.use(async (req, res, next) => {
   }
 });
 
-app.delete('/issue/:id', async (req, res) => {
+app.delete('/issues/:id', async (req, res) => {
   try {
-    const bookId = req.params.id;
-    await req.db.query(`UPDATE issue SET deleted_flag = 1 WHERE id = ?`, [bookId]);
+    const issueId = req.params.id;
+    await req.db.query(`UPDATE issues SET deleted_flag = 1 WHERE id = ?`, [issueId]);
     res.status(200).json({ success: true, message: ' successfully deleted' });
   } catch (err) {
     res.status(400).json({ success: false, message: 'Bad request', data: null });
   }
 });
 
-app.get('/issue', async (req, res) => {
+app.get('/issues', async (req, res) => {
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
-    const [issues] = await req.db.query(`SELECT * FROM issue`);
+    const [issues] = await req.db.query(`SELECT * FROM issues`);
 
     // Send a JSON response with the retrieved issues
     res.status(200).json({ success: true, message: 'Issues successfully retrieved', data: issues });
@@ -78,15 +78,15 @@ app.get('/issue', async (req, res) => {
   }
 });
 
-app.get('/issue/:id', async function (req, res) {
+app.get('/issues/:id', async function (req, res) {
   try {
-    const bookId = req.params.id;
-    const [book] = await req.db.query('SELECT * FROM books WHERE id = ? LIMIT 1', [bookId]);
+    const issueId = req.params.id;
+    const [issue] = await req.db.query('SELECT * FROM issues WHERE id = ? LIMIT 1', [issueId]);
 
-    if (!book || book.length === 0) {
-      res.status(404).json({ success: false, message: 'Book not found', data: null });
+    if (!issue || issue.length === 0) {
+      res.status(404).json({ success: false, message: 'Issue not found', data: null });
     } else {
-      res.status(200).json({ success: true, message: 'Book retrieved successfully', data: book });
+      res.status(200).json({ success: true, message: 'Issue retrieved successfully', data: issue });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: 'Internal server error', data: null });
@@ -111,7 +111,7 @@ app.post(
       const { title, description } = req.body;
 
       // Replace Prisma-specific code with MySQL query
-      const [newIssue] = await req.db.query('INSERT INTO issue (title, description) VALUES (?, ?)', [
+      const [newIssue] = await req.db.query('INSERT INTO issues (title, description) VALUES (?, ?)', [
         title,
         description,
       ]);
