@@ -220,6 +220,19 @@ app.use(async function verifyJwt(req, res, next) {
 
 */
 
+app.get('/issues', async (req, res) => {
+  try {
+    // Execute a SQL query to retrieve issues from the "issue" table
+    const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0`);
+
+    // Send a JSON response with the retrieved issues
+    res.status(200).json({ success: true, message: 'Issues successfully retrieved', data: issues });
+  } catch (err) {
+    // Handle errors that may occur during the execution of the try block
+    res.status(500).json({ success: false, message: 'Internal server error', data: null });
+  }
+});
+
 const createIssueSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().min(1),
@@ -239,11 +252,9 @@ app.post('/issues', async (req, res) => {
     [title, description]
   );
 
-  res.status(201).json({
-    id: insert.insertId,
-    title,
-    description,
-  });
+  const [body] = await req.db.query('SELECT * FROM issues WHERE id = ?', [insert.insertId]);
+
+  res.status(201).json({ body });
 });
 
 // Start the Express server
