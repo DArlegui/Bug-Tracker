@@ -1,4 +1,5 @@
 import { API_URL } from '@/environment';
+import { createIssueSchema } from '../validationSchemas';
 
 export interface IssueType {
   title: string;
@@ -6,6 +7,12 @@ export interface IssueType {
 }
 
 export const createIssue = async (body: IssueType) => {
+  const validation = createIssueSchema.safeParse({ title: body.title, description: body.description });
+
+  if (!validation.success) {
+    throw new Error(validation.error.errors[0].message);
+  }
+
   try {
     const res = await fetch(`${API_URL}/issues/new`, {
       method: 'POST',
