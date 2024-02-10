@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
 import { validationResult, check } from 'express-validator';
 dotenv.config(); // Allows us to access the .env
+import { z } from 'zod';
 
 const app = express();
 const port = process.env.PORT; // default port to listen
@@ -55,6 +56,8 @@ app.use(async (req, res, next) => {
   }
 });
 
+/*
+
 app.delete('/issues/:id', async (req, res) => {
   try {
     const issueId = req.params.id;
@@ -68,7 +71,7 @@ app.delete('/issues/:id', async (req, res) => {
 app.get('/issues', async (req, res) => {
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
-    const [issues] = await req.db.query(`SELECT * FROM issues`);
+    const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0`);
 
     // Send a JSON response with the retrieved issues
     res.status(200).json({ success: true, message: 'Issues successfully retrieved', data: issues });
@@ -124,7 +127,9 @@ app.post(
   }
 );
 
-/* LOGIN DB BELOW */
+*/
+
+/* LOGIN DB BELOW 
 
 // Hashes the password and inserts the info into the `user` table
 app.post('/register', async function (req, res) {
@@ -211,6 +216,34 @@ app.use(async function verifyJwt(req, res, next) {
   }
 
   await next();
+});
+
+*/
+
+const createIssueSchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().min(1),
+});
+
+app.post('/issues', async (req, res) => {
+  const { title, description } = req.body;
+  const validation = createIssueSchema.safeParse({ title, description });
+
+  if (!validation.success) {
+    return res.status(400).json(validation.error);
+  }
+
+  const [insert] = await req.db.query(
+    `INSERT INTO issues (title, description, createdAt) 
+    VALUES (?, ?, CURRENT_TIMESTAMP)`,
+    [title, description]
+  );
+
+  res.status(201).json({
+    id: insert.insertId,
+    title,
+    description,
+  });
 });
 
 // Start the Express server
