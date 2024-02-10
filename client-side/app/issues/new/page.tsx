@@ -17,6 +17,7 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const router = useRouter();
+
   const {
     register,
     control,
@@ -25,8 +26,20 @@ const NewIssuePage = () => {
   } = useForm<IssueForm>({
     resolver: zodResolver(createIssueSchema),
   });
+
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setIsSubmitting(true);
+      await createIssue(data);
+      router.push('/issues');
+    } catch (error: any) {
+      setIsSubmitting(false);
+      setError(error.message);
+    }
+  });
 
   return (
     <div className="max-w-xl">
@@ -35,18 +48,7 @@ const NewIssuePage = () => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form
-        className="space-y-3"
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            setIsSubmitting(true);
-            await createIssue(data);
-            router.push('/issues');
-          } catch (error: any) {
-            setIsSubmitting(false);
-            setError(error.message);
-          }
-        })}>
+      <form className="space-y-3" onSubmit={onSubmit}>
         <TextField.Root>
           <TextFieldInput placeholder="Title" {...register('title')} />
         </TextField.Root>
