@@ -234,16 +234,16 @@ app.get('/issues', async (req, res) => {
 });
 
 const createIssueSchema = z.object({
-  title: z.string().min(1).max(255),
-  description: z.string().min(1),
+  title: z.string().min(1, 'Title is required').max(255),
+  description: z.string().min(1, 'Description is required'),
 });
 
-app.post('/issues', async (req, res) => {
+app.post('/issues/new', async (req, res) => {
   const { title, description } = req.body;
   const validation = createIssueSchema.safeParse({ title, description });
 
   if (!validation.success) {
-    return res.status(400).json(validation.error);
+    return res.status(400).json(validation.error.format());
   }
 
   const [insert] = await req.db.query(

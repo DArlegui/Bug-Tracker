@@ -1,21 +1,31 @@
 import { API_URL } from '@/environment';
 
-interface IssueForm {
+export interface IssueType {
   title: string;
   description: string;
 }
 
-export const createIssue = async (body: IssueForm) => {
-  const res = await fetch(`${API_URL}/issues`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // Authorization: `Bearer ${getJwt()}`,
-    },
-    body: JSON.stringify(body),
-  });
+export const createIssue = async (body: IssueType) => {
+  try {
+    const res = await fetch(`${API_URL}/issues/new`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: `Bearer ${getJwt()}`,
+      },
+      body: JSON.stringify(body),
+    });
 
-  const data = await res.json();
-  console.log(data);
-  return data;
+    if (!res.ok) {
+      // If response status is not ok, throw an error
+      throw new Error('Failed to create issue');
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    // If there's an error during fetch or response status is not ok
+    console.error('Error creating issue:', error);
+    throw new Error('Please fill in all fields');
+  }
 };
