@@ -219,14 +219,13 @@ app.use(async function verifyJwt(req, res, next) {
 });
 
 */
-
 app.get('/issues', async (req, res) => {
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
     const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0`);
 
     // Send a JSON response with the retrieved issues
-    res.status(200).json({ success: true, message: 'Issues successfully retrieved', data: issues });
+    res.status(200).json({ issues });
   } catch (err) {
     // Handle errors that may occur during the execution of the try block
     res.status(500).json({ success: false, message: 'Internal server error', data: null });

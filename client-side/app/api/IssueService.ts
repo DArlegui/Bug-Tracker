@@ -2,8 +2,18 @@ import { API_URL } from '@/environment';
 import { createIssueSchema } from '../validationSchemas';
 
 export interface IssueType {
+  id: number;
   title: string;
   description: string;
+  status: Status;
+  createdAt: Date;
+  updatedAt: Date | null;
+}
+
+enum Status {
+  'OPEN',
+  'IN_PROGRESS',
+  'CLOSED',
 }
 
 export const createIssue = async (body: IssueType) => {
@@ -34,5 +44,26 @@ export const createIssue = async (body: IssueType) => {
     // If there's an error during fetch or response status is not ok
     console.error('Error creating issue:', error);
     throw new Error('Please fill in all fields');
+  }
+};
+
+export const getIssues = async () => {
+  try {
+    const res = await fetch(`${API_URL}/issues`, {
+      method: 'GET',
+    });
+    const data: { issues: IssueType[] } = await res.json(); // Parse the response correctly
+
+    // Convert createdAt and updatedAt strings to Date objects
+    const parsedIssues = data.issues.map((issue) => ({
+      ...issue,
+      createdAt: new Date(issue.createdAt),
+      updatedAt: issue.updatedAt ? new Date(issue.updatedAt) : null, // Check if updatedAt exists before conversion
+    }));
+
+    return parsedIssues; // Return the array of issues with createdAt and updatedAt as Date objects
+  } catch (error) {
+    console.error('Error getting issues:', error);
+    throw new Error('Failed to get issues');
   }
 };
