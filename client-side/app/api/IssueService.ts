@@ -10,10 +10,10 @@ export interface IssueType {
   updatedAt: Date | null;
 }
 
-enum Status {
-  'OPEN',
-  'IN_PROGRESS',
-  'CLOSED',
+export enum Status {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  CLOSED = 'CLOSED',
 }
 
 export const createIssue = async (body: IssueType) => {
