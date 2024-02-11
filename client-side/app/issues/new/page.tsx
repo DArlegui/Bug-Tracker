@@ -1,5 +1,5 @@
 'use client';
-import { createIssue } from '@/app/api/IssueService';
+import { IssueType, createIssue } from '@/app/api/IssueService';
 import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from '@/app/components/Spinner';
 import { createIssueSchema } from '@/app/validationSchemas';
@@ -33,7 +33,7 @@ const NewIssuePage = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setIsSubmitting(true);
-      await createIssue(data);
+      await createIssue(data as IssueType);
       router.push('/issues');
     } catch (error: any) {
       setIsSubmitting(false);
