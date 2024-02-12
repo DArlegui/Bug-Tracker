@@ -1,15 +1,29 @@
-import { Button, Table } from '@radix-ui/themes';
+'use client';
+import { Table } from '@radix-ui/themes';
+import delay from 'delay';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { IssueType, getIssues } from '../api/IssueService';
 import IssueStatusBadge from '../components/IssueStatusBadge';
-import delay from 'delay';
 import IssueActions from './IssueActions';
+import LoadingIssuesPage from './loading';
 
-const IssuesPage = async () => {
-  const issues: IssueType[] = await getIssues();
-  await delay(2000);
+const IssuesPage = () => {
+  // let issues: IssueType[] = getIssues();
+  const [issues, setIssues] = useState<IssueType[]>([]);
 
-  return (
+  useEffect(() => {
+    async function fetchIssues() {
+      // await delay(2000);
+      const fetchIssues = await getIssues();
+      setIssues(fetchIssues);
+    }
+    fetchIssues();
+  }, []);
+
+  return issues.length == 0 ? (
+    <LoadingIssuesPage />
+  ) : (
     <div>
       <IssueActions />
       <Table.Root variant="surface">
@@ -25,7 +39,7 @@ const IssuesPage = async () => {
             return (
               <Table.Row key={issue.id}>
                 <Table.Cell>
-                  {issue.title}
+                  <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
                   <div className="block md:hidden">
                     <IssueStatusBadge status={issue.status} />
                   </div>
@@ -33,7 +47,7 @@ const IssuesPage = async () => {
                 <Table.Cell className="hidden md:table-cell">
                   <IssueStatusBadge status={issue.status} />
                 </Table.Cell>
-                <Table.Cell className="hidden md:table-cell ">{issue.createdAt.toDateString()}</Table.Cell>
+                <Table.Cell className="hidden md:table-cell ">{new Date(issue.createdAt).toDateString()}</Table.Cell>
               </Table.Row>
             );
           })}

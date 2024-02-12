@@ -3,8 +3,8 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import IssueActions from './IssueActions';
 
-const LoadingIssuesPage = () => {
-  const issues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const LoadingIssuesPage = () => {
+  const issues = [1, 2, 3, 4, 5, 6, 7, 8];
   return (
     <div>
       <IssueActions />

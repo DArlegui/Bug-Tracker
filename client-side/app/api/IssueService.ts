@@ -34,7 +34,6 @@ export const createIssue = async (body: IssueType) => {
     });
 
     if (!res.ok) {
-      // If response status is not ok, throw an error
       throw new Error('Failed to create issue');
     }
 
@@ -52,18 +51,30 @@ export const getIssues = async () => {
     const res = await fetch(`${API_URL}/issues`, {
       method: 'GET',
     });
-    const data: { issues: IssueType[] } = await res.json(); // Parse the response correctly
+    console.log('fetching data');
 
-    // Convert createdAt and updatedAt strings to Date objects
-    const parsedIssues = data.issues.map((issue) => ({
-      ...issue,
-      createdAt: new Date(issue.createdAt),
-      updatedAt: issue.updatedAt ? new Date(issue.updatedAt) : null, // Check if updatedAt exists before conversion
-    }));
-
-    return parsedIssues; // Return the array of issues with createdAt and updatedAt as Date objects
+    const data: { issues: IssueType[] } = await res.json();
+    return data.issues;
   } catch (error) {
     console.error('Error getting issues:', error);
     throw new Error('Failed to get issues');
+  }
+};
+
+export const getIssueId = async (id: number) => {
+  try {
+    const res = await fetch(`${API_URL}/issues/${id}`, {
+      method: 'GET',
+    });
+
+    if (res.status === 404 || res.status === 400 || res.status === 500) {
+      return null;
+    }
+
+    let data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error getting issue:', error);
+    throw new Error('Failed to get issue');
   }
 };
