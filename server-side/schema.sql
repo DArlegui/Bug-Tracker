@@ -1,7 +1,7 @@
 -- CREATE DATABASE bugTracker;
 -- USE bugTacker;
 
--- CREATE TABLE issue (
+-- CREATE TABLE issues (
 --   id          INT AUTO_INCREMENT PRIMARY KEY,
 --   title       VARCHAR(255),
 --   description TEXT,
@@ -10,7 +10,7 @@
 --   updatedAt   DATETIME ON UPDATE CURRENT_TIMESTAMP
 -- );
 
--- INSERT INTO issue (title, description, status)
+-- INSERT INTO issues (title, description, status)
 -- VALUES 
 -- ('Issue 1', 'This is the first issue', 'OPEN'),
 -- ('Issue 2', 'This is the second issue', 'CLOSED'),

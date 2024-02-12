@@ -59,7 +59,7 @@ app.use(async (req, res, next) => {
 app.get('/issues', async (req, res) => {
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
-    const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0`);
+    const [issues] = await req.db.query(`SELECT * FROM issues ORDER BY id DESC`);
 
     // Send a JSON response with the retrieved issues
     res.status(200).json({ issues });
@@ -70,7 +70,7 @@ app.get('/issues', async (req, res) => {
 });
 
 app.get('/issues/:id', async (req, res) => {
-  const id = parseInt(req.params);
+  const id = parseInt(req.params.id);
 
   if (isNaN(id)) {
     return res.status(400).json({ success: false, message: 'Invalid issue ID' });
@@ -87,6 +87,7 @@ app.get('/issues/:id', async (req, res) => {
     } else {
       // If an issue was found, return it as the response
       const issue = issueRows[0]; //Returns a single object instead of an
+      console.log(issue);
       res.status(200).json(issue);
     }
   } catch (error) {
