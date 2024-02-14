@@ -1,5 +1,7 @@
 import { API_URL } from '@/environment';
 import { createIssueSchema } from '../validationSchemas';
+import axios from 'axios';
+import { NextRequest, NextResponse } from 'next/server';
 
 export interface IssueType {
   id: number;
@@ -16,65 +18,60 @@ export enum Status {
   CLOSED = 'CLOSED',
 }
 
-export const createIssue = async (body: IssueType) => {
-  const validation = createIssueSchema.safeParse({ title: body.title, description: body.description });
+// export async function POST(request: NextRequest) {
+//   const body = await request.json();
 
-  if (!validation.success) {
-    throw new Error(validation.error.errors[0].message);
-  }
+//   const validation = createIssueSchema.safeParse({ title: body.title, description: body.description });
 
-  try {
-    const res = await fetch(`${API_URL}/issues/new`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${getJwt()}`,
-      },
-      body: JSON.stringify(body),
-    });
+//   if (!validation.success) {
+//     throw new Error(validation.error.errors[0].message);
+//   }
 
-    if (!res.ok) {
-      throw new Error('Failed to create issue');
-    }
+//   try {
+//     const res = await axios.post(`${API_URL}/issues/new`, body, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         // Authorization: `Bearer ${getJwt()}`,
+//       },
+//     });
 
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    // If there's an error during fetch or response status is not ok
-    console.error('Error creating issue:', error);
-    throw new Error('Please fill in all fields');
-  }
-};
+//     if (!res.data) {
+//       throw new Error('Failed to create issue');
+//     }
+
+//     return res.data;
+//   } catch (error) {
+//     // If there's an error during fetch or response status is not ok
+//     console.error('Error creating issue:', error);
+//     throw new Error('Please fill in all fields');
+//   }
+// }
 
 export const getIssues = async () => {
   try {
-    const res = await fetch(`${API_URL}/issues`, {
-      method: 'GET',
-    });
+    const res = await axios.get(`${API_URL}/issues`);
     console.log('fetching data');
 
-    const data: { issues: IssueType[] } = await res.json();
+    const data: { issues: IssueType[] } = await res.data;
     return data.issues;
   } catch (error) {
     console.error('Error getting issues:', error);
-    throw new Error('Failed to get issues');
+    return null;
   }
 };
 
 export const getIssueId = async (id: number) => {
   try {
-    const res = await fetch(`${API_URL}/issues/${id}`, {
-      method: 'GET',
-    });
+    const res = await axios.get(`${API_URL}/issues/${id}`);
 
     if (res.status === 404 || res.status === 400 || res.status === 500) {
       return null;
     }
 
-    let data = await res.json();
+    const data = await res.data;
     return data;
   } catch (error) {
     console.error('Error getting issue:', error);
-    throw new Error('Failed to get issue');
+    return null;
   }
 };

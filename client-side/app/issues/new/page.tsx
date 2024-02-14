@@ -1,5 +1,6 @@
 'use client';
-import { IssueType, createIssue } from '@/app/api/IssueService';
+import { IssueType } from '@/app/api/IssueService';
+import axios from 'axios';
 import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from '@/app/components/Spinner';
 import { createIssueSchema } from '@/app/validationSchemas';
@@ -11,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { POST } from '@/app/api/issues/route';
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 
 type IssueForm = z.infer<typeof createIssueSchema>;
@@ -33,8 +35,9 @@ const NewIssuePage = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setIsSubmitting(true);
-      await createIssue(data as IssueType);
+      await axios.post('/api/issues', data);
       router.push('/issues');
+      router.refresh();
     } catch (error: any) {
       setIsSubmitting(false);
       setError(error.message);

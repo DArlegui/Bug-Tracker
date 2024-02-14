@@ -16,7 +16,7 @@ const IssuesPage = () => {
     async function fetchIssues() {
       // await delay(2000);
       const fetchIssues = await getIssues();
-      setIssues(fetchIssues);
+      setIssues(fetchIssues as IssueType[]);
     }
     fetchIssues();
   }, []);
