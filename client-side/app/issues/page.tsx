@@ -1,7 +1,6 @@
 'use client';
 import { Table } from '@radix-ui/themes';
-import delay from 'delay';
-import Link from 'next/link';
+import Link from '../components/Link';
 import { useEffect, useState } from 'react';
 import { IssueType, getIssues } from '../api/IssueService';
 import IssueStatusBadge from '../components/IssueStatusBadge';

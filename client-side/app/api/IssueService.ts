@@ -49,7 +49,10 @@ export enum Status {
 
 export const getIssues = async () => {
   try {
-    const res = await axios.get(`${API_URL}/issues`);
+    const res = await axios.get(`${API_URL}/issues`, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
     console.log('fetching data');
 
     const data: { issues: IssueType[] } = await res.data;
@@ -62,11 +65,11 @@ export const getIssues = async () => {
 
 export const getIssueId = async (id: number) => {
   try {
-    const res = await axios.get(`${API_URL}/issues/${id}`);
+    const res = await axios.get(`${API_URL}/issues/${id}`, {
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-    if (res.status === 404 || res.status === 400 || res.status === 500) {
-      return null;
-    }
+    if (res.status !== 200) return null;
 
     const data = await res.data;
     return data;
