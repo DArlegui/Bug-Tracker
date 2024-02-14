@@ -1,19 +1,16 @@
 'use client';
+import { IssueStatusBadge, Link } from '@/app/components';
 import { Table } from '@radix-ui/themes';
-import Link from '../components/Link';
 import { useEffect, useState } from 'react';
 import { IssueType, getIssues } from '../api/IssueService';
-import IssueStatusBadge from '../components/IssueStatusBadge';
 import IssueActions from './IssueActions';
 import LoadingIssuesPage from './loading';
 
 const IssuesPage = () => {
-  // let issues: IssueType[] = getIssues();
   const [issues, setIssues] = useState<IssueType[]>([]);
 
   useEffect(() => {
     async function fetchIssues() {
-      // await delay(2000);
       const fetchIssues = await getIssues();
       setIssues(fetchIssues as IssueType[]);
     }
