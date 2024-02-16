@@ -1,25 +1,26 @@
 'use client';
 import { IssueStatusBadge, Link } from '@/app/components';
+import { API_URL } from '@/environment';
 import { Table } from '@radix-ui/themes';
-import { useEffect, useState } from 'react';
-import { IssueType, getIssues } from '../api/IssueService';
+import useSWR from 'swr';
+import { IssueType } from '../api/IssueService';
 import IssueActions from './IssueActions';
 import LoadingIssuesPage from './loading';
 
+/*https://swr.vercel.app/docs/getting-started */
+const fetcher = async (url: RequestInfo, init?: RequestInit) => {
+  const res = await fetch(url, init);
+  if (!res.ok) throw new Error('Failed to fetch data');
+  return res.json();
+};
+
 const IssuesPage = () => {
-  const [issues, setIssues] = useState<IssueType[]>([]);
+  const { data, error } = useSWR(`${API_URL}/issues`, fetcher);
 
-  useEffect(() => {
-    async function fetchIssues() {
-      const fetchIssues = await getIssues();
-      setIssues(fetchIssues as IssueType[]);
-    }
-    fetchIssues();
-  }, []);
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <LoadingIssuesPage />;
 
-  return issues.length == 0 ? (
-    <LoadingIssuesPage />
-  ) : (
+  return (
     <div>
       <IssueActions />
       <Table.Root variant="surface">
@@ -31,7 +32,7 @@ const IssuesPage = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {issues.map((issue: IssueType) => {
+          {data.issues.map((issue: IssueType) => {
             return (
               <Table.Row key={issue.id}>
                 <Table.Cell>
@@ -52,5 +53,7 @@ const IssuesPage = () => {
     </div>
   );
 };
+
+export const dynamic = 'force-dynamic';
 
 export default IssuesPage;
