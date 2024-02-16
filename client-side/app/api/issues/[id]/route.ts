@@ -33,3 +33,23 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: nu
     return NextResponse.json('Error updating issue', { status: 400 });
   }
 }
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
+  console.log('Deleting Issue');
+  try {
+    // Send a DELETE request to delete the issue
+    const deletedIssue = await axios.delete(`${API_URL}/issues/${params.id}`);
+
+    // If the request fails, return a 400 response
+    if (deletedIssue.status !== 204) {
+      return NextResponse.json('Failed to delete issue', { status: 404 });
+    } else {
+      console.log('Deleted Issue successfully');
+      return NextResponse.json({ status: 204 });
+    }
+  } catch (error) {
+    // Handle any errors that occur during the request processing
+    console.error('Error deleting issue:', error);
+    return NextResponse.json('Error deleting issue', { status: 400 });
+  }
+}

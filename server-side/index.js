@@ -137,6 +137,23 @@ app.patch('/issues/:id/edit', async (req, res) => {
   res.status(200).json({ issue });
 });
 
+app.delete('/issues/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid issue ID' });
+  }
+
+  const [update] = await req.db.query('UPDATE issues SET deleted_flag = 1 WHERE id = ?', [id]);
+
+  //Checks the number of rows affected by the SQL operation
+  if (update.affectedRows === 0) {
+    return res.status(404).json({ success: false, message: 'Issue not found' });
+  }
+
+  res.status(204).json({ success: true, message: 'Issue deleted' });
+});
+
 // Start the Express server
 app.listen(port, () => {
   console.log(`server started at http://localhost:${port}`);
