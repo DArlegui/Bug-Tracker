@@ -1,6 +1,12 @@
 import { IssueType, getIssueId } from '@/app/api/IssueService';
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
-import IssueForm from '../../_components/IssueForm';
+import IssueFormSkeleton from '../../_components/IssueFormSkeleton';
+
+const IssueForm = dynamic(() => import('@/app/issues/_components/IssueForm'), {
+  ssr: false,
+  loading: () => <IssueFormSkeleton />,
+});
 
 interface Props {
   params: { id: string };
