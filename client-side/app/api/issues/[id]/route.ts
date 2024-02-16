@@ -1,27 +1,35 @@
-// import { createIssueSchema } from '@/app/validationSchemas';
-// import { API_URL } from '@/environment';
-// import { NextRequest, NextResponse } from 'next/server';
-// import axios from 'axios';
+import { issueSchema } from '@/app/validationSchemas';
+import { API_URL } from '@/environment';
+import axios from 'axios';
+import { NextRequest, NextResponse } from 'next/server';
+import { IssueType } from '../../IssueService';
 
-// export const getIssueId = async (request: NextRequest, { params }: { params: { id: string } }) => {
-//   const body = await request.json();
-//   const validation = createIssueSchema.safeParse(body);
+export async function PATCH(request: NextRequest, { params }: { params: { id: number } }) {
+  console.log('Patching Issue');
+  const body = await request.json();
+  const validation = issueSchema.safeParse(body);
 
-//   if (!validation.success) return NextResponse.json(validation.error.format(), { status: 400 });
+  // If validation fails, return a 400 response with validation errors
+  if (!validation.success || !params.id) {
+    return NextResponse.json('PATCH Request error', { status: 400 });
+  }
 
-//   try {
-//     const issue = await axios.get(`${API_URL}/issues/${params.id}`, {
-//       method: 'GET',
-//     });
+  try {
+    // Send a PATCH request to update the issue
+    const updatedIssue = await axios.patch(`${API_URL}/issues/${params.id}/edit`, body);
 
-//     if (issue.status === 404 || issue.status === 400 || issue.status === 500) {
-//       return null;
-//     }
+    // If the request fails, return a 400 response
+    if (updatedIssue.status !== 200) {
+      return NextResponse.json('Failed to update issue', { status: 400 });
+    }
 
-//     let data = issue.data;
-//     return NextResponse.json(data, { status: 200 });
-//   } catch (error) {
-//     console.error('Error getting issue:', error);
-//     throw new Error('Failed to get issue');
-//   }
-// };
+    // If successful, return the updated issue data
+    const data: IssueType = updatedIssue.data;
+    console.log('Patched Issue successfully');
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    // Handle any errors that occur during the request processing
+    console.error('Error updating issue:', error);
+    return NextResponse.json('Error updating issue', { status: 400 });
+  }
+}

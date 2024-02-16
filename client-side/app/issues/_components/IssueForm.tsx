@@ -1,8 +1,10 @@
 'use client';
 import { IssueType } from '@/app/api/IssueService';
+import { PATCH } from '@/app/api/issues/[id]/route';
 import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from '@/app/components/Spinner';
-import { createIssueSchema } from '@/app/validationSchemas';
+import { issueSchema } from '@/app/validationSchemas';
+import { API_URL } from '@/environment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Callout, TextField, TextFieldInput } from '@radix-ui/themes';
 import axios from 'axios';
@@ -14,7 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 
-type IssueFormData = z.infer<typeof createIssueSchema>;
+type IssueFormData = z.infer<typeof issueSchema>;
 
 const IssueForm = ({ issue }: { issue?: IssueType }) => {
   const router = useRouter();
@@ -25,16 +27,18 @@ const IssueForm = ({ issue }: { issue?: IssueType }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<IssueFormData>({
-    resolver: zodResolver(createIssueSchema),
+    resolver: zodResolver(issueSchema),
   });
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data: any) => {
     try {
       setIsSubmitting(true);
-      await axios.post('/api/issues', data);
+      //POST & PATCH are called by Next.js when an HTTP request matches the specified route
+      if (issue) await axios.patch(`/api/issues/${issue.id}`, data);
+      else await axios.post('/api/issues', data);
       router.push('/issues');
       router.refresh();
     } catch (error: any) {
@@ -63,7 +67,7 @@ const IssueForm = ({ issue }: { issue?: IssueType }) => {
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
-          Submit
+          {issue ? 'Update Issue' : 'Submit New Issue'}
           {isSubmitting && <Spinner />}
         </Button>
       </form>

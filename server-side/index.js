@@ -87,7 +87,7 @@ app.get('/issues/:id', async (req, res) => {
     } else {
       // If an issue was found, return it as the response
       const issue = issueRows[0]; //Returns a single object instead of an
-      console.log(issue);
+      console.log('get(/issues/:id)', issue);
       res.status(200).json(issue);
     }
   } catch (error) {
@@ -108,7 +108,33 @@ app.post('/issues/new', async (req, res) => {
 
   const [body] = await req.db.query('SELECT * FROM issues WHERE id = ?', [insert.insertId]);
 
+  console.log("post('/issues/new')", body);
+
   res.status(201).json({ body });
+});
+
+app.patch('/issues/:id/edit', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, description } = req.body;
+
+  if (isNaN(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid issue ID' });
+  }
+
+  const [update] = await req.db.query('UPDATE issues SET title = ?, description = ? WHERE id = ?', [
+    title,
+    description,
+    id,
+  ]);
+
+  if (update.affectedRows === 0) {
+    return res.status(404).json({ success: false, message: 'Issue not found' });
+  }
+
+  const [issue] = await req.db.query('SELECT * FROM issues WHERE id = ?', [id]);
+  console.log('/issues/:id/edit', issue);
+
+  res.status(200).json({ issue });
 });
 
 // Start the Express server

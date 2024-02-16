@@ -7,7 +7,8 @@ interface Props {
 }
 
 const EditIssuePage = async ({ params }: Props) => {
-  const issue: IssueType = await getIssueId(parseInt(params.id));
+  const issue: IssueType | null = await getIssueId(parseInt(params.id));
+  console.log('from issues/[id]/edit page', issue?.id);
 
   if (!issue) notFound();
 
