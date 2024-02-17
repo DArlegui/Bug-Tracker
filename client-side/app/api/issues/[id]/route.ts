@@ -3,6 +3,7 @@ import { API_URL } from '@/environment';
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 import { IssueType } from '../../IssueService';
+import delay from 'delay';
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: number } }) {
   console.log('Patching Issue');
@@ -36,6 +37,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: nu
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
   console.log('Deleting Issue');
+  // await delay(2000); //For Testing purposes
   try {
     // Send a DELETE request to delete the issue
     const deletedIssue = await axios.delete(`${API_URL}/issues/${params.id}`);
