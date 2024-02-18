@@ -121,7 +121,7 @@ app.patch('/issues/:id/edit', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid issue ID' });
   }
 
-  const [update] = await req.db.query('UPDATE issues SET title = ?, description = ? WHERE id = ?', [
+  const [update] = await req.db.query('UPDATE issues SET title = ?, description = ?, updatedAt = NOW() WHERE id = ?', [
     title,
     description,
     id,
