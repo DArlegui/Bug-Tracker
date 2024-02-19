@@ -1,11 +1,16 @@
+import authOptions from '@/app/auth/authOptions';
 import { issueSchema } from '@/app/validationSchemas';
 import { API_URL } from '@/environment';
 import axios from 'axios';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { IssueType } from '../../IssueService';
-import delay from 'delay';
+// import delay from 'delay';
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: number } }) {
+  const session = getServerSession(authOptions);
+  if (!session) return NextResponse.json('Unauthorized', { status: 401 });
+
   console.log('Patching Issue');
   const body = await request.json();
   const validation = issueSchema.safeParse(body);
@@ -36,6 +41,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: nu
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
+  const session = getServerSession(authOptions);
+  if (!session) return NextResponse.json('Unauthorized', { status: 401 });
+
   console.log('Deleting Issue');
   // await delay(2000); //For Testing purposes
   try {

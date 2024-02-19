@@ -1,9 +1,14 @@
+import authOptions from '@/app/auth/authOptions';
 import { issueSchema } from '@/app/validationSchemas';
 import { API_URL } from '@/environment';
 import axios from 'axios';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  const session = getServerSession(authOptions);
+  if (!session) return NextResponse.json('Unauthorized', { status: 401 });
+
   console.log('Creating issue');
   const body = await request.json();
 
