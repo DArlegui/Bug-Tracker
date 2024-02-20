@@ -8,7 +8,7 @@ import { IssueType } from '../../IssueService';
 // import delay from 'delay';
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: number } }) {
-  const session = getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json('Unauthorized', { status: 401 });
 
   console.log('Patching Issue');

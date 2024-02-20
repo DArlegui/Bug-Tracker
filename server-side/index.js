@@ -21,10 +21,10 @@ const pool = mysql.createPool({
 });
 
 const corsOptions = {
-  origin: '*',
-  credentials: true,
-  'access-control-allow-credentials': true,
-  optionSuccessStatus: 200,
+  origin: `http://localhost:${process.env.CLIENT_PORT}`,
+  // credentials: true,
+  // 'access-control-allow-credentials': true,
+  // optionSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
