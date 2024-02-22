@@ -7,6 +7,7 @@ CREATE TABLE `issues` (
     `createdAt` DATETIME(0) NULL,
     `updatedAt` DATETIME(0) NULL,
     `deleted_flag` INTEGER NOT NULL DEFAULT 0,
+    -- `assignedToUserId` VARCHAR(255) NULL;
 
     UNIQUE INDEX `id_UNIQUE`(`id`),
     PRIMARY KEY (`id`)
