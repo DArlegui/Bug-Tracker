@@ -1,4 +1,5 @@
-import { IssueType, getIssueId } from '@/app/api/IssueService';
+import { getIssueId } from '@/app/api/IssueService';
+import { issues as IssueType } from '@prisma/client';
 import authOptions from '@/app/auth/authOptions';
 import { Box, Flex, Grid } from '@radix-ui/themes';
 import { getServerSession } from 'next-auth';
@@ -28,7 +29,7 @@ const IssueDetailPage = async ({ params }: Props) => {
       {session && (
         <Box>
           <Flex gap="4" direction="column">
-            <AssigneeSelect />
+            <AssigneeSelect issue={issue} />
             <EditIssueButton issueId={issue.id} />
             <DeleteIssueButton issueId={issue.id} />
           </Flex>

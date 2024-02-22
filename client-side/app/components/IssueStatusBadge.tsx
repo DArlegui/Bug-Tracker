@@ -1,5 +1,5 @@
 import { Badge } from '@radix-ui/themes';
-import { Status } from '../api/IssueService';
+import { issues_status as Status } from '@prisma/client';
 
 const statusMap: Record<Status, { label: string; color: 'red' | 'orange' | 'green' }> = {
   OPEN: { label: 'Open', color: 'red' },

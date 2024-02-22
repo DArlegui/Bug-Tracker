@@ -115,17 +115,16 @@ app.post('/issues/new', async (req, res) => {
 
 app.patch('/issues/:id/edit', async (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, description } = req.body;
+  const { title, description, assignedToUserId } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).json({ success: false, message: 'Invalid issue ID' });
   }
 
-  const [update] = await req.db.query('UPDATE issues SET title = ?, description = ?, updatedAt = NOW() WHERE id = ?', [
-    title,
-    description,
-    id,
-  ]);
+  const [update] = await req.db.query(
+    'UPDATE issues SET title = ?, description = ?, assignedToUserId = ?, updatedAt = NOW() WHERE id = ?',
+    [title, description, assignedToUserId, id]
+  );
 
   if (update.affectedRows === 0) {
     return res.status(404).json({ success: false, message: 'Issue not found' });

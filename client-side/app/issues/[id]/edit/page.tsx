@@ -1,4 +1,5 @@
-import { IssueType, getIssueId } from '@/app/api/IssueService';
+import { getIssueId } from '@/app/api/IssueService';
+import { issues as IssueType } from '@prisma/client';
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import IssueFormSkeleton from '../../_components/IssueFormSkeleton';

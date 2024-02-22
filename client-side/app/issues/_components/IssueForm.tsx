@@ -1,5 +1,5 @@
 'use client';
-import { IssueType } from '@/app/api/IssueService';
+import { issues as IssueType } from '@prisma/client';
 import ErrorMessage from '@/app/components/ErrorMessage';
 import Spinner from '@/app/components/Spinner';
 import { issueSchema } from '@/app/validationSchemas';

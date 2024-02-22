@@ -3,7 +3,7 @@ import { IssueStatusBadge, Link } from '@/app/components';
 import { API_URL } from '@/environment';
 import { Table } from '@radix-ui/themes';
 import useSWR from 'swr';
-import { IssueType } from '../api/IssueService';
+import { issues as IssueType } from '@prisma/client';
 import IssueActions from './IssueActions';
 import LoadingIssuesPage from './loading';
 
@@ -44,7 +44,9 @@ const IssuesPage = () => {
                 <Table.Cell className="hidden md:table-cell">
                   <IssueStatusBadge status={issue.status} />
                 </Table.Cell>
-                <Table.Cell className="hidden md:table-cell ">{new Date(issue.createdAt).toDateString()}</Table.Cell>
+                <Table.Cell className="hidden md:table-cell ">
+                  {issue.createdAt ? new Date(issue.createdAt).toDateString() : 'N/A'}
+                </Table.Cell>
               </Table.Row>
             );
           })}

@@ -1,28 +1,35 @@
 import authOptions from '@/app/auth/authOptions';
-import { issueSchema } from '@/app/validationSchemas';
+import { patchIssueSchema } from '@/app/validationSchemas';
 import { API_URL } from '@/environment';
 import axios from 'axios';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { IssueType } from '../../IssueService';
+import { issues as IssueType } from '@prisma/client';
 // import delay from 'delay';
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: number } }) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json('Unauthorized', { status: 401 });
+  // const session = await getServerSession(authOptions);
+  // if (!session) return NextResponse.json('Unauthorized', { status: 401 });
 
   console.log('Patching Issue');
   const body = await request.json();
-  const validation = issueSchema.safeParse(body);
+  const validation = patchIssueSchema.safeParse(body);
 
   // If validation fails, return a 400 response with validation errors
   if (!validation.success || !params.id) {
     return NextResponse.json('PATCH Request error', { status: 400 });
   }
 
+  const { title, description, assignedToUserId } = body;
+
   try {
     // Send a PATCH request to update the issue
-    const updatedIssue = await axios.patch(`${API_URL}/issues/${params.id}/edit`, body);
+
+    const updatedIssue = await axios.patch(`${API_URL}/issues/${params.id}/edit`, {
+      title,
+      description,
+      assignedToUserId,
+    });
 
     // If the request fails, return a 400 response
     if (updatedIssue.status !== 200) {
