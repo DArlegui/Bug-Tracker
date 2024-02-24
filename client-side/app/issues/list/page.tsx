@@ -21,7 +21,7 @@ interface Props {
 }
 
 const IssuesPage = ({ searchParams }: Props) => {
-  const { data, error } = useSWR(`${API_URL}/issues`, fetcher);
+  const { data, error } = useSWR(`${API_URL}/issues?orderBy=${searchParams.orderBy}`, fetcher);
 
   if (error) return <div>Failed to load</div>;
   if (!data) return <LoadingIssuesPage />;

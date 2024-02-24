@@ -56,16 +56,26 @@ app.use(async (req, res, next) => {
   }
 });
 
-//Gets all Issues
+//Gets all Issues with optional ordering
 app.get('/issues', async (req, res) => {
+  const { orderBy } = req.query;
+  let orderByClause = 'id DESC'; // Default ordering
+
+  // Validate orderBy to prevent SQL injection
+  const allowedColumns = ['title', 'status', 'createdAt'];
+  if (orderBy && allowedColumns.includes(orderBy)) {
+    orderByClause = orderBy;
+  }
+
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
-    const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0 ORDER BY id DESC`);
+    const [issues] = await req.db.query(`SELECT * FROM issues WHERE deleted_flag = 0 ORDER BY ${orderByClause}`);
 
     // Send a JSON response with the retrieved issues
     res.status(200).json({ issues });
   } catch (err) {
     // Handle errors that may occur during the execution of the try block
+    console.error('Error fetching issues:', err);
     res.status(500).json({ success: false, message: 'Internal server error', data: null });
   }
 });
