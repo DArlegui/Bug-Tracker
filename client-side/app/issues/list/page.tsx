@@ -1,9 +1,9 @@
 'use client';
 import { IssueStatusBadge, Link } from '@/app/components';
 import { API_URL } from '@/environment';
+import { issues as IssueType, issues_status as Status } from '@prisma/client';
 import { Table } from '@radix-ui/themes';
 import useSWR from 'swr';
-import { issues as IssueType } from '@prisma/client';
 import IssueActions from './IssueActions';
 import LoadingIssuesPage from './loading';
 
@@ -14,11 +14,20 @@ const fetcher = async (url: RequestInfo, init?: RequestInit) => {
   return res.json();
 };
 
-const IssuesPage = () => {
+interface Props {
+  searchParams: { status: Status };
+}
+
+const IssuesPage = ({ searchParams }: Props) => {
   const { data, error } = useSWR(`${API_URL}/issues`, fetcher);
 
   if (error) return <div>Failed to load</div>;
   if (!data) return <LoadingIssuesPage />;
+
+  const filteredIssues = data.issues.filter((issue: IssueType) => {
+    if (searchParams.status) return issue.status === searchParams.status;
+    return true;
+  });
 
   return (
     <div>
@@ -32,7 +41,7 @@ const IssuesPage = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {data.issues.map((issue: IssueType) => {
+          {filteredIssues.map((issue: IssueType) => {
             return (
               <Table.Row key={issue.id}>
                 <Table.Cell>
