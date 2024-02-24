@@ -56,6 +56,7 @@ app.use(async (req, res, next) => {
   }
 });
 
+//Gets all Issues
 app.get('/issues', async (req, res) => {
   try {
     // Execute a SQL query to retrieve issues from the "issue" table
@@ -69,6 +70,7 @@ app.get('/issues', async (req, res) => {
   }
 });
 
+//Gets a specific issue
 app.get('/issues/:id', async (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -97,6 +99,7 @@ app.get('/issues/:id', async (req, res) => {
   }
 });
 
+/* Post a new Issue */
 app.post('/issues/new', async (req, res) => {
   const { title, description } = req.body;
 
@@ -113,6 +116,7 @@ app.post('/issues/new', async (req, res) => {
   res.status(201).json({ body });
 });
 
+/* Edits an Issue  */
 app.patch('/issues/:id/edit', async (req, res) => {
   const id = parseInt(req.params.id);
   const { title, description, assignedToUserId } = req.body;
@@ -136,6 +140,29 @@ app.patch('/issues/:id/edit', async (req, res) => {
   res.status(200).json({ issue });
 });
 
+//Assigns an issue to a user
+app.patch('/issues/:id/assign', async (req, res) => {
+  console.log('Assigning issue to user');
+  const id = parseInt(req.params.id);
+  const { assignedToUserId } = req.body;
+
+  if (isNaN(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid issue ID' });
+  }
+
+  const [update] = await req.db.query('UPDATE issues SET assignedToUserId = ? WHERE id = ?', [assignedToUserId, id]);
+
+  if (update.affectedRows === 0) {
+    return res.status(404).json({ success: false, message: 'Issue not found' });
+  }
+
+  const [issue] = await req.db.query('SELECT * FROM issues WHERE id = ?', [id]);
+  console.log('/issues/:id/assign', issue);
+
+  res.status(200).json({ issue });
+});
+
+// Deletes an issue
 app.delete('/issues/:id', async (req, res) => {
   const id = parseInt(req.params.id);
 

@@ -1,8 +1,10 @@
 'use client';
-import { User } from '@prisma/client';
+import { API_URL } from '@/environment';
+import { issues as IssueType, User } from '@prisma/client';
 import { Select } from '@radix-ui/themes';
-import useSWR from 'swr';
+import axios from 'axios';
 import Skeleton from 'react-loading-skeleton';
+import useSWR from 'swr';
 
 const fetcher = async (url: RequestInfo, init?: RequestInit) => {
   const res = await fetch(url, init);
@@ -10,19 +12,26 @@ const fetcher = async (url: RequestInfo, init?: RequestInit) => {
   return res.json();
 };
 
-const AssigneeSelect = () => {
+const AssigneeSelect = ({ issue }: { issue: IssueType }) => {
   const { data: users, error } = useSWR<User[]>(`/api/users`, fetcher);
 
   if (error) return <div>Failed to load</div>;
   if (!users) return <Skeleton height="1.9rem" />;
 
   return (
-    <Select.Root>
+    <Select.Root
+      defaultValue={issue.assignedToUserId || ''}
+      onValueChange={(userId) => {
+        axios.patch(`${API_URL}/issues/${issue.id}/assign`, {
+          assignedToUserId: userId === 'unassigned' ? null : userId,
+        });
+      }}>
       <Select.Trigger placeholder="Assign..." />
       <Select.Content>
         <Select.Group>
           <Select.Label>Suggestions</Select.Label>
-          {users.map((user) => (
+          <Select.Item value="unassigned">Unassigned</Select.Item>
+          {users?.map((user) => (
             <Select.Item key={user.id} value={user.id}>
               {user.name}
             </Select.Item>
