@@ -4,6 +4,7 @@ import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
+import { API_URL } from '@/environment';
 
 const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -19,7 +20,7 @@ const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const res = await axios.post('/api/auth/login', {
+        const res = await axios.post(`${API_URL}/login`, {
           METHODS: 'POST',
           headers: {
             'Content-Type': 'application/json',

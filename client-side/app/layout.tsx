@@ -6,6 +6,9 @@ import Navbar from './Navbar';
 import './globals.css';
 import './theme-config.css';
 import AuthProvider from './auth/Provider';
+import { headers } from 'next/headers';
+import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,14 +21,34 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  //https://stackoverflow.com/questions/75362636/how-can-i-get-the-url-pathname-on-a-server-component-next-js-13
+
+  // const headersList = headers();
+
+  // const fullUrl = headersList.get('referer') || '';
+  // const splitUrl = fullUrl.split('/');
+  // let pageName = splitUrl[splitUrl.length - 1];
+  // pageName = pageName.split('?')[0];
+
+  // const isNavBar = useMemo(() => {
+  //   const banList = ['new_user', 'sign_in'];
+  //   let isNavBar = true;
+  //   banList.map((item) => {
+  //     // if (item === pageName) isNavBar = false;
+  //     if (item === pageName) isNavBar = false;
+  //   });
+  //   return isNavBar;
+  // }, [pageName]);
   return (
     <html lang="en">
       <body className={inter.variable}>
+        {/* <p>{pageName}</p> */}
         <AuthProvider>
-          <Theme appearance="light" accentColor="blue">
+          <Theme className="flex-col vertical h-screen" appearance="light" accentColor="blue">
+            {/* {isNavBar && <Navbar />} */}
             <Navbar />
             <Container>
-              <main className="p-5">{children}</main>
+              <main className="px-5 ">{children}</main>
             </Container>
             {/* <ThemePanel /> */}
           </Theme>
