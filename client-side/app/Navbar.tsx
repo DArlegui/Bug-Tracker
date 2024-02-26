@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaBug } from 'react-icons/fa';
-import { useSession } from 'next-auth/react';
-import { Avatar, Box, Container, DropdownMenu, Flex, Text } from '@radix-ui/themes';
+import { signOut, useSession } from 'next-auth/react';
+import { Avatar, Box, Button, Container, DropdownMenu, Flex, Text } from '@radix-ui/themes';
 import { Skeleton } from '@/app/components';
 
 //Navbar, NavLinks, AuthStatus
@@ -20,7 +20,14 @@ const Navbar = () => {
             </Link>
             <NavLinks />
           </Flex>
-          <AuthStatus />
+          <Flex align="center" className="space-x-2">
+            <AuthStatus />
+            {/* <Text
+              className="hover:cursor-pointer hover:text-zinc-800 text-zinc-400"
+              onClick={() => console.log(signOut())}>
+              Sign out
+            </Text> */}
+          </Flex>
         </Flex>
       </Container>
     </nav>

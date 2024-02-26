@@ -20,22 +20,28 @@ const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const res = await axios.post(`${API_URL}/login`, {
-          METHODS: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        console.log('inside credentials authorize');
+        const res = await axios.post(
+          `${API_URL}/log-in`,
+          {
             username: credentials?.username,
             password: credentials?.password,
-          }),
-        });
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
-        const user = res.data.user;
+        const { user, jwt } = res.data;
+        console.log('user', user);
 
         if (user) {
+          console.log('success');
           return user;
         } else {
+          console.log('failure');
           return null;
         }
       },

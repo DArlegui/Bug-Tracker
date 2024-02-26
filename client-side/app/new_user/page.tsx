@@ -1,19 +1,15 @@
 'use client';
 import { useState } from 'react';
 import Form from '../components/Form';
+import { API_URL } from '@/environment';
+import { useRouter } from 'next/navigation';
 
 const NewUser = () => {
-  // const [firstName, setFirstName] = useState('');
-  // const [lastName, setLastName] = useState('');
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  // const navigate = useNavigate();
-
-  // const handlefirstNameChange = (e: any) => {
-  //   setFirstName(e.target.value);
-  // }
 
   const handleUsernameChange = (e: any) => {
     setUsername(e.target.value);
@@ -28,21 +24,27 @@ const NewUser = () => {
   };
 
   const handleRegisterClick = async () => {
-    // if (!username || !password || !confirmPassword) {
-    //   setError('Please fill in all fields');
-    //   return;
-    // }
-    // if (password !== confirmPassword) {
-    //   setError('Passwords do not match');
-    //   return;
-    // }
-    // const { jwt, success } = await register({ username, password });
-    // if (success) {
-    //   localStorage.setItem('book-app-jwt', jwt);
-    //   navigate('/home');
-    // } else {
-    //   setError('Username already taken');
-    // }
+    if (!username || !password || !confirmPassword) {
+      setError('Please fill in all fields');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      console.log(data);
+      router.push('/sign_in');
+      router.refresh();
+    } catch {
+      setError('An error occurred');
+    }
   };
 
   return (

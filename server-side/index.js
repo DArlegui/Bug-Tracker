@@ -1,13 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-import { validationResult, check } from 'express-validator';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import mysql from 'mysql2/promise';
+import randomstring from 'randomstring'; // For Create a 25 string id for the user
 dotenv.config(); // Allows us to access the .env
-import { z } from 'zod';
 
 const app = express();
 const port = process.env.PORT; // default port to listen
@@ -22,9 +21,9 @@ const pool = mysql.createPool({
 
 const corsOptions = {
   origin: `http://localhost:${process.env.CLIENT_PORT}`,
-  // credentials: true,
-  // 'access-control-allow-credentials': true,
-  // optionSuccessStatus: 200,
+  credentials: true,
+  'access-control-allow-credentials': true,
+  optionSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -56,6 +55,70 @@ app.use(async (req, res, next) => {
   }
 });
 
+/* LOGIN Methods*/
+app.post('/register', async function (req, res) {
+  try {
+    const { password, username } = req.body;
+
+    if (!password || !username) {
+      return res.json({ error: 'Username or password is not defined!', success: false });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate a random unique string as the id
+    const id = randomstring.generate({ length: 25, charset: 'alphanumeric' });
+    const image = 'https://cdn4.iconfinder.com/data/icons/linecon/512/photo-256.png';
+
+    const [user] = await req.db.query(
+      `INSERT INTO user (id, name, password, image)
+      VALUES (:id, :username, :hashedPassword, :image);`,
+      { id, username, hashedPassword, image }
+    );
+
+    const jwtEncodedUser = jwt.sign({ userId: user.id, ...req.body }, process.env.JWT_KEY);
+
+    res.json({ jwt: jwtEncodedUser, success: true });
+  } catch (error) {
+    console.log('error', error);
+    res.json({ error, success: false });
+  }
+});
+
+app.post('/log-in', async function (req, res) {
+  try {
+    const { username, password: userEnteredPassword } = req.body;
+    const [[user]] = await req.db.query(`SELECT * FROM user WHERE name = :username`, { username });
+
+    if (!user || !user.password) {
+      console.log('logging in from backend');
+      return res.status(404).json({ error: 'User or password is not defined!', success: false });
+    }
+
+    const hashedPassword = `${user.password}`;
+    const passwordMatches = await bcrypt.compare(userEnteredPassword, hashedPassword);
+
+    if (passwordMatches) {
+      console.log('Checking Passwords');
+      const payload = {
+        userId: user.id,
+        username: user.username,
+      };
+
+      const jwtEncodedUser = jwt.sign(payload, process.env.JWT_KEY);
+
+      return res.json({ user, jwt: jwtEncodedUser, success: true });
+    } else {
+      console.log('Invalid Password');
+      return res.status(400).json({ error: 'Invalid password', success: false });
+    }
+  } catch (err) {
+    console.log('Error in /authenticate', err);
+    return res.status(500).json({ error: 'Internal server error', success: false });
+  }
+});
+
+/* Methods Below */
 //Gets all Issues with optional ordering
 app.get('/issues', async (req, res) => {
   const { orderBy } = req.query;
