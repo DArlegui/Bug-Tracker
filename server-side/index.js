@@ -64,6 +64,16 @@ app.post('/register', async function (req, res) {
       return res.json({ error: 'Username or password is not defined!', success: false });
     }
 
+    //Check user name unique
+    const [userExists] = await req.db.query(`SELECT name FROM user WHERE name = :username LIMIT 1`, {
+      username,
+    });
+    console.log('userExists', userExists);
+
+    if (userExists.length > 0) {
+      return res.status(400).json({ error: 'Username already exists', success: false });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate a random unique string as the id

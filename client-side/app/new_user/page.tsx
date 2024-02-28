@@ -38,6 +38,12 @@ const NewUser = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+
+      if (res.status === 400) {
+        setError('Username already exists');
+        return;
+      }
+
       const data = await res.json();
       console.log(data);
       router.push('/sign_in');
