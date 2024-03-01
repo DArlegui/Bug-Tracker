@@ -7,9 +7,8 @@ const LatestIssues = async () => {
   const issues = await prisma.issues.findMany({
     orderBy: { createdAt: 'desc' },
     take: 5,
-    include: {
-      assignedToUser: true,
-    },
+    include: { assignedToUser: true },
+    where: { deleted_flag: 0 },
   });
   return (
     <Card>
