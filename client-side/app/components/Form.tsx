@@ -35,7 +35,7 @@ const Form: React.FC<Props> = ({
       </Link>
       <div className="text-2xl font-bold">{title}</div>
       <div
-        className="inline-flex items-center self-stretch h-12 rounded text-lg continueWithGoogle border justify-center text-[black] gap-3 border-[solid] bg-white hover:cursor-pointer "
+        className="inline-flex items-center self-stretch h-12 rounded text-lg continueWithGoogle border justify-center text-[black] gap-3 border-[solid] bg-white hover:cursor-pointer hover:border-[#9e9e9e] "
         onClick={() => signIn('google', { callbackUrl: '/' })}>
         <img src="google_logo.png" className="w-5 h-5" />
         {title} with Google

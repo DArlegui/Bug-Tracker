@@ -10,12 +10,13 @@ export default async function Home({ searchParams }: { searchParams: { page: str
   const inProgress = await prisma.issues.count({ where: { status: 'IN_PROGRESS' } });
   const closed = await prisma.issues.count({ where: { status: 'CLOSED' } });
   return (
-    <Grid columns={{ initial: '1', md: '2' }}>
+    <Grid columns={{ initial: '1', md: '2' }} gap="5">
       {/* <Pagination itemCount={100} pageSize={10} currentPage={parseInt(searchParams.page)} />; */}
       <Flex direction="column" gap="5">
+        <IssueSummary open={open} inProgress={inProgress} closed={closed} />
         <IssueChart open={open} inProgress={inProgress} closed={closed} />
-        <LatestIssues />
       </Flex>
+      <LatestIssues />
     </Grid>
   );
 }
