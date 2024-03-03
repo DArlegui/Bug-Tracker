@@ -1,36 +1,16 @@
-'use client';
 import { IssueStatusBadge, Link } from '@/app/components';
-import { API_URL } from '@/environment';
+import prisma from '@/prisma/client';
 import { issues as IssueType, issues_status as Status } from '@prisma/client';
 import { ArrowUpIcon } from '@radix-ui/react-icons';
 import { Table } from '@radix-ui/themes';
 import NextLink from 'next/link';
-import useSWR from 'swr';
 import IssueActions from './IssueActions';
-import LoadingIssuesPage from './loading';
-
-/*https://swr.vercel.app/docs/getting-started */
-const fetcher = async (url: RequestInfo, init?: RequestInit) => {
-  const res = await fetch(url, init);
-  if (!res.ok) throw new Error('Failed to fetch data');
-  return res.json();
-};
 
 interface Props {
   searchParams: { status: Status; orderBy: keyof IssueType };
 }
 
-const IssuesPage = ({ searchParams }: Props) => {
-  const { data, error } = useSWR(`${API_URL}/issues?orderBy=${searchParams.orderBy}`, fetcher);
-
-  if (error) return <div>Failed to load... Backend Server is probably not on</div>;
-  if (!data) return <LoadingIssuesPage />;
-
-  const filteredIssues = data.issues.filter((issue: IssueType) => {
-    if (searchParams.status) return issue.status === searchParams.status;
-    return true;
-  });
-
+const IssuesPage = async ({ searchParams }: Props) => {
   const columns: {
     label: string;
     value: keyof IssueType;
@@ -40,6 +20,18 @@ const IssuesPage = ({ searchParams }: Props) => {
     { label: 'Status', value: 'status', className: 'hidden md:table-cell' },
     { label: 'Created', value: 'createdAt', className: 'hidden md:table-cell' },
   ];
+
+  const statuses = Object.values(Status);
+  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
+
+  const orderBy = columns.map((column) => column.value).includes(searchParams.orderBy)
+    ? { [searchParams.orderBy]: 'asc' }
+    : undefined;
+
+  const issues = await prisma.issues.findMany({
+    where: { status },
+    orderBy,
+  });
 
   return (
     <div>
@@ -61,7 +53,7 @@ const IssuesPage = ({ searchParams }: Props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredIssues.map((issue: IssueType) => {
+          {issues.map((issue: IssueType) => {
             return (
               <Table.Row key={issue.id}>
                 <Table.Cell>
