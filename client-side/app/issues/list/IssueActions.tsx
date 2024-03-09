@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const IssueActions = () => {
   return (
-    <Flex mb="5" justify="between">
+    <Flex justify="between">
       <IssueStatusFilter />
       <Button>
         <Link href="/issues/new" style={{ color: 'white' }}>
