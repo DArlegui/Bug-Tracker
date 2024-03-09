@@ -35,7 +35,7 @@ const authOptions: NextAuthOptions = {
         );
 
         const { user, jwt } = res.data;
-        console.log('user', user);
+        //console.log('user', user);
 
         if (user) {
           console.log('success');
