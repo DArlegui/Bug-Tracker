@@ -1,6 +1,6 @@
 import Pagination from '@/app/components/Pagination';
 import prisma from '@/prisma/client';
-import { issues_status as Status } from '@prisma/client';
+import { Prisma, issues_status as Status } from '@prisma/client';
 import { Flex } from '@radix-ui/themes';
 import { Metadata } from 'next';
 import IssueActions from './IssueActions';
@@ -14,9 +14,9 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
 
-  const where = { status };
+  const where = { status, deleted_flag: 0 };
 
-  const orderBy = columnNames.includes(searchParams.orderBy) ? { [searchParams.orderBy]: 'desc' } : undefined;
+  const orderBy: Prisma.issuesOrderByWithRelationInput = columnNames.includes(searchParams.orderBy) ? { [searchParams.orderBy]: 'asc' } : { createdAt: 'desc' };
 
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
