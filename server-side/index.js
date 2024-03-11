@@ -208,10 +208,12 @@ app.patch('/issues/:id/edit', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid issue ID' });
   }
 
-  const [update] = await req.db.query(
-    'UPDATE issues SET title = ?, description = ?, assignedToUserId = ?, updatedAt = NOW() WHERE id = ?',
-    [title, description, assignedToUserId, id]
-  );
+  const [update] = await req.db.query('UPDATE issues SET title = ?, description = ?, assignedToUserId = ?, updatedAt = NOW() WHERE id = ?', [
+    title,
+    description,
+    assignedToUserId,
+    id,
+  ]);
 
   if (update.affectedRows === 0) {
     return res.status(404).json({ success: false, message: 'Issue not found' });
@@ -267,3 +269,5 @@ app.delete('/issues/:id', async (req, res) => {
 app.listen(port, () => {
   console.log(`server started at http://localhost:${port}`);
 });
+
+export default app;
