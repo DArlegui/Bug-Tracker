@@ -21,9 +21,10 @@ const AssigneeSelect = ({ issue }: { issue: IssueType }) => {
 
   const assignIssue = async (userId: string) => {
     try {
-      await axios.patch(`${API_URL}/issues/${issue.id}/assign`, {
+      const res = await axios.patch(`${API_URL}/issues/${issue.id}/assign`, {
         assignedToUserId: userId === 'unassigned' ? null : userId,
       });
+      if (res.status === 200) toast.success('Changes saved successfully.');
     } catch (error) {
       toast.error('Changes could not be saved.');
     }
