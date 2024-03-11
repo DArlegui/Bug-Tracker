@@ -20,7 +20,7 @@ const pool = mysql.createPool({
 });
 
 const corsOptions = {
-  origin: `http://localhost:${process.env.CLIENT_PORT}`,
+  origin: process.env.CLIENT_PORT,
   credentials: true,
   'access-control-allow-credentials': true,
   optionSuccessStatus: 200,
@@ -267,7 +267,7 @@ app.delete('/issues/:id', async (req, res) => {
 
 // Start the Express server
 app.listen(port, () => {
-  console.log(`server started at http://localhost:${port}`);
+  console.log(`server started`);
 });
 
 export default app;
