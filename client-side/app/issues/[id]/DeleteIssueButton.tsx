@@ -27,7 +27,7 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
     <>
       <AlertDialog.Root>
         <AlertDialog.Trigger>
-          <Button color="red" disabled={isDeleting}>
+          <Button className="!bg-red-500" disabled={isDeleting}>
             Delete Issue
             {isDeleting && <Spinner />}
           </Button>
@@ -40,7 +40,7 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
           </AlertDialog.Description>
           <Flex mt="4" gap="3">
             <AlertDialog.Action>
-              <Button color="red" onClick={deleteIssue}>
+              <Button className="!bg-red-500" onClick={deleteIssue}>
                 Delete
               </Button>
             </AlertDialog.Action>
@@ -56,7 +56,7 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
         <AlertDialog.Content style={{ maxWidth: 450 }}>
           <AlertDialog.Title>Error</AlertDialog.Title>
           <AlertDialog.Description>An error occurred. Issue could not be deleted.</AlertDialog.Description>
-          <Button color="gray" variant="soft" mt="2" onClick={() => setError(false)}>
+          <Button className="!bg-gray-500" mt="2" onClick={() => setError(false)}>
             OK
           </Button>
         </AlertDialog.Content>
