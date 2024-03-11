@@ -1,4 +1,20 @@
 -- CreateTable
+CREATE TABLE `issues` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(255) NOT NULL,
+    `description` TEXT NOT NULL,
+    `status` ENUM('OPEN', 'IN_PROGRESS', 'CLOSED') NOT NULL DEFAULT 'OPEN',
+    `createdAt` DATETIME(0) NULL,
+    `updatedAt` DATETIME(0) NULL,
+    `deleted_flag` INTEGER NOT NULL DEFAULT 0,
+    `assignedToUserId` VARCHAR(255) NULL,
+
+    UNIQUE INDEX `id_UNIQUE`(`id`),
+    INDEX `issues_assignedToUserId_idx`(`assignedToUserId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Account` (
     `id` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
@@ -13,6 +29,7 @@ CREATE TABLE `Account` (
     `id_token` TEXT NULL,
     `session_state` VARCHAR(191) NULL,
 
+    INDEX `Account_userId_idx`(`userId`),
     UNIQUE INDEX `Account_provider_providerAccountId_key`(`provider`, `providerAccountId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -25,18 +42,20 @@ CREATE TABLE `Session` (
     `expires` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Session_sessionToken_key`(`sessionToken`),
+    INDEX `Session_userId_idx`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Google_User` (
+CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NULL,
+    `password` BLOB NULL,
     `email` VARCHAR(191) NULL,
     `emailVerified` DATETIME(3) NULL,
     `image` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `Google_User_email_key`(`email`),
+    UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -49,9 +68,3 @@ CREATE TABLE `VerificationToken` (
     UNIQUE INDEX `VerificationToken_token_key`(`token`),
     UNIQUE INDEX `VerificationToken_identifier_token_key`(`identifier`, `token`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- AddForeignKey
-ALTER TABLE `Account` ADD CONSTRAINT `Account_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Google_User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Google_User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
