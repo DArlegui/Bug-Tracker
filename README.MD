@@ -1,8 +1,8 @@
 ## Issue Tracker
 
-[Live Demo](#)
+[Live Demo](https://darlegui-issue-tracker.vercel.app/)
 
-This is a fullstack CRUD issue tracker project built using Next.js, Prisma, and various other modern technologies. It provides functionalities for users to log in, create, view, edit, and delete issues.
+This is a fullstack CRUD issue tracker project built using Next.js, Prisma, and various other modern technologies. It provides functionalities for users to log in, create, view, edit, and delete issues. Uses a custom server-side API for handling some of the CRUD operations and authentication.
 
 ## Features
 
